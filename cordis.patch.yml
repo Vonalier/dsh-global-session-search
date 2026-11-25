@@ -1,0 +1,4 @@
+- insert:
+    - id: global-session-search
+      name: '@local/dsh-global-session-search'
+      config: {}

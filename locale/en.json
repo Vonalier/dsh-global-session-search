@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Global session search",
+    "description": "Search every DSH conversation across all workspaces and all records, including user, assistant, system, and tool entries."
+  }
+}
