@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: '@local/dsh-global-session-search',
+  id: 'dsh-global-session-search',
   factory(require) {
     const React = require('react')
     const { useEffect, useMemo, useRef, useState } = React
