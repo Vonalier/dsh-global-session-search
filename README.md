@@ -16,7 +16,7 @@
 
 - 浏览器请求通过 DSH Connection 的认证 Fetch 路由 `/api/global-session-search/search` 进入，和 `/api` 的 RPC 请求共用 Host/Origin 检查与浏览器/API Peer 鉴权。
 - 只有 owner Peer 可以读取结果；非 owner Peer 返回 403。
-- `engines.dsh >= 0.2.3`，使用 DSH 的 `connection.fetch.register` 注册精确路由，不直接暴露 `webServer` 匿名路由。
+- `engines.dsh >= 0.2.2-rc.5`，使用 DSH 的 `connection.fetch.register` 注册精确路由，不直接暴露 `webServer` 匿名路由。
 
 ## 说明
 

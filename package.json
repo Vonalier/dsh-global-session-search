@@ -1,9 +1,9 @@
 {
   "name": "dsh-global-session-search",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "engines": {
-    "dsh": ">=0.2.3"
+    "dsh": ">=0.2.2-rc.5"
   },
   "type": "module",
   "description": "Search every DSH conversation across all workspaces and all records.",
