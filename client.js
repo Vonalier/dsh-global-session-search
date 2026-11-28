@@ -187,7 +187,7 @@ window.__ModuleLoader__.load({
         setCopied('')
         try {
           const params = new URLSearchParams({ q, limit: String(limit) })
-          const response = await fetch('/global-session-search/search?' + params.toString(), { cache: 'no-store' })
+          const response = await fetch('/api/global-session-search/search?' + params.toString(), { cache: 'no-store' })
           const body = await response.json()
           if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`)
           setData(body)

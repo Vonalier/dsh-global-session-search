@@ -12,7 +12,7 @@ import zlib from 'node:zlib'
 import os from 'node:os'
 
 export const name = 'global-session-search'
-export const inject = ['tools']
+export const inject = ['tools', 'connection']
 
 const OUTPUT = {
   schema: { type: 'string' },
@@ -68,40 +68,39 @@ export function apply(ctx, config) {
     },
   })
 
-  // The browser page needs an HTTP endpoint; it cannot read disk or call tools.
-  ctx.inject(['webServer'], (webCtx) => {
-    webCtx.webServer.register({
-      kind: 'exact',
-      path: '/global-session-search/search',
-      handler: async (req, res) => {
-        if (req.method !== 'GET') {
-          sendJson(res, 405, { error: 'GET only' })
-          return
+  // The browser page needs an authenticated HTTP endpoint; it cannot read
+  // disk or call tools. Registering through Connection's exact Fetch route
+  // keeps the request behind the same Host/Origin and browser/API admission
+  // checks as every other /api request.
+  ctx.connection.fetch.register({
+    path: '/api/global-session-search/search',
+    methods: ['GET'],
+    requestBody: 'buffered',
+    fetch: async (request) => {
+      try {
+        const url = new URL(request.url, 'http://localhost')
+        const query = String(url.searchParams.get('q') || '').trim()
+        if (!query) {
+          return jsonResponse(400, { error: 'q is required' })
         }
-        try {
-          const url = new URL(req.url || '/', 'http://localhost')
-          const query = String(url.searchParams.get('q') || '').trim()
-          if (!query) {
-            sendJson(res, 400, { error: 'q is required' })
-            return
-          }
-          const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || defaultLimit, 1), 100)
-          const sessionId = url.searchParams.get('session_id') || undefined
-          sendJson(res, 200, searchRecords(resolveSessionsRoot(config), query, { limit, sessionId }))
-        } catch (error) {
-          sendJson(res, 500, { error: error instanceof Error ? error.message : String(error) })
-        }
-      },
-    })
+        const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || defaultLimit, 1), 100)
+        const sessionId = url.searchParams.get('session_id') || undefined
+        return jsonResponse(200, searchRecords(resolveSessionsRoot(config), query, { limit, sessionId }))
+      } catch (error) {
+        return jsonResponse(500, { error: error instanceof Error ? error.message : String(error) })
+      }
+    },
   })
 }
 
-function sendJson(res, status, payload) {
-  res.writeHead(status, {
-    'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store',
+function jsonResponse(status, payload) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+    },
   })
-  res.end(JSON.stringify(payload))
 }
 
 export function resolveSessionsRoot(config = {}) {
