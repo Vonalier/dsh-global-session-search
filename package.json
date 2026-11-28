@@ -1,6 +1,6 @@
 {
   "name": "dsh-global-session-search",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": false,
   "engines": {
     "dsh": ">=0.2.2-rc.5"
